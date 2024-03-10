@@ -80,12 +80,18 @@ void* BitonicSort(void* void_args){
 
 
 int main(){
+	struct timespec start, end;
+
+
 	int array[2000];
 	int size;
 	scanf("%d", &size);
 	for(int i = 0; i < size; i++){
 		scanf("%d", &array[i]);
 	}
+
+    
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 
 	SortArgs args;
 
@@ -95,9 +101,14 @@ int main(){
 
 	BitonicSort(&args);
 
-		
+	/*	
 	printf("\n");
 	for(int i = 0; i < size; i++){
 		printf("%d ",array[i]);
 	}
+	*/
+	clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+    double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+    
+    printf("Time taken: %f seconds\n", time_taken);
 }

@@ -15,9 +15,10 @@ void swap(int *a, int *b){
 	*b = temp;
 }
 
-void BitonicMerge(SortArgs* args){
+void * BitonicMerge(void* void_args){
+	SortArgs* args = (SortArgs*)void_args;
 	if(args->size == 1){
-		return;
+		return NULL;
 	}
 
 	int half = args->size / 2;
@@ -40,14 +41,16 @@ void BitonicMerge(SortArgs* args){
 	right_args.direction = args->direction;
 
 	
-	BitonicMerge(&left_args);
-	BitonicMerge(&right_args);
+
+	BitonicMerge ((void*)&left_args);
+	BitonicMerge ((void*)&right_args);
 }
 
 
-void BitonicSort(SortArgs *args){
+void* BitonicSort(void* void_args){
+	SortArgs* args = (SortArgs*)void_args;
 	if(args->size == 1){
-		return;
+		return NULL;
 	}
 	SortArgs left_args;
 
@@ -61,28 +64,26 @@ void BitonicSort(SortArgs *args){
 	right_args.size = args->size / 2;
 	right_args.direction = 0;
 	
-	pthread_t thread_left, thread_right;
-	
-	BitonicSort(&left_args);
-	BitonicSort(&right_args);
+	BitonicSort ((void*)&left_args);
+	BitonicSort ((void*)&right_args);	
+
 	BitonicMerge(args);
 }
 
 
-int main(int argc, char* argv[]){
-	if (argc > 2){
-		printf("too many arguments");
-		return 0;
-	}
+int main(){
+	struct timespec start, end;
 
-	int thread_count = atoi(argv[1]);
 
-	int array[1000];
+	int array[2000];
 	int size;
 	scanf("%d", &size);
 	for(int i = 0; i < size; i++){
 		scanf("%d", &array[i]);
 	}
+
+    
+    clock_gettime(CLOCK_MONOTONIC_RAW, &start);
 
 	SortArgs args;
 
@@ -92,9 +93,13 @@ int main(int argc, char* argv[]){
 
 	BitonicSort(&args);
 
-		
+	/*		
 	printf("\n");
 	for(int i = 0; i < size; i++){
 		printf("%d ",array[i]);
-	}
+	}*/
+	clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+    double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+    
+    printf("Time taken: %f seconds\n", time_taken);
 }
